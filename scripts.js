@@ -1,20 +1,24 @@
-const { Sequelize, DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize('postgresql://postgres:jEPoQSVJdeCUalyeQupAfcIbysMIaQXA@monorail.proxy.rlwy.net:32176/ProbEstatisticaDb')
 
-const AppTechnicalVisits = sequelize.define('AppTechnicalVisits', {
-    // defina aqui os campos do seu modelo, se necessário
-  }, {
-    freezeTableName: true,
-    timestamps: false
-  });
+google.charts.load("current", { packages: ["corechart"] });
+google.charts.setOnLoadCallback(drawChart);
 
-  sequelize.query('SELECT EXTRACT(MONTH FROM "DataDoServico") as month, COUNT(*) as count FROM "AppTechnicalVisits" GROUP BY month', 
-  { type: Sequelize.QueryTypes.SELECT }
-).then(function(results) {
-  // results será um array de objetos com os campos month e count
-  console.log(results);
-}).catch(function(error) {
-  console.error(error);
-});
-  
+function drawChart() {
+  var data = new google.visualization.DataTable();
+  data.addColumn("string", "Topping");
+  data.addColumn("number", "Slices");
+  data.addRows([
+    ["Março", 3],
+    ["Abril", 1],
+    ["Maio", 1],
+    ["Junho", 1],
+    ["Julho", 2],
+  ]);
+
+  var options = { title: "Teste Gráfico de Pizza", width: 400, height: 300 };
+
+  var chart = new google.visualization.PieChart(
+    document.getElementById("chart_div")
+  );
+  chart.draw(data, options);
+}
