@@ -190,7 +190,7 @@ function getByStateAndMonthGrafico(dados) {
   };
 
   var chart = new google.visualization.ColumnChart(
-    document.getElementById("chart_div4")
+    document.getElementById("chart_div")
   );
   chart.draw(data, options);
 }
