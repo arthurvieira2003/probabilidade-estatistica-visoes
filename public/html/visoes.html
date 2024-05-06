@@ -5,12 +5,51 @@
       src="https://www.gstatic.com/charts/loader.js"
     ></script>
     <script src="../js/scripts.js"></script>
+    <style>
+      .chart-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+      .chart {
+        width: 80%;
+      }
+    </style>
+    <script>
+      function filtrarPorCidade() {
+        getByCityFiltradoDados();
+        getByCityAndMonthDados();
+      }
+
+      function filtrarPorEstado() {
+        getByStateFiltradoDados();
+        getByStateAndMonthDados();
+      }
+
+      function limparFiltros() {
+        getPerMonthDados();
+        getByCityDados();
+        getBySateDados();
+        getByReasonDados();
+      }
+    </script>
   </head>
   <body>
     <input type="text" id="parametro" name="parametro" />
-    <button onclick="getByStateAndMonthDados()">Buscar Dados</button>
-    <div id="chart_div"></div>
-    <div id="chart_div2"></div>
-    <div id="chart_div3"></div>
+    <button id="filtroEstado" onclick="filtrarPorEstado()">
+      Filtrar por Estado
+    </button>
+    <button id="filtroCidade" onclick="filtrarPorCidade()">
+      Filtrar por Cidade
+    </button>
+    <button id="limparFiltros" onclick="limparFiltros()">Limpar Filtros</button>
+    <div class="chart-container">
+      <div id="chart_div" class="chart"></div>
+      <div id="chart_div2" class="chart"></div>
+    </div>
+    <div class="chart-container">
+      <div id="chart_div3" class="chart"></div>
+      <div id="chart_div4" class="chart"></div>
+    </div>
   </body>
 </html>
