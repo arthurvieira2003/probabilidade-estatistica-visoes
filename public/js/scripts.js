@@ -12,28 +12,107 @@ async function getPerMonthDados() {
 
     const dados = dadosString.split(";").map(Number);
 
-    const resposta2 = await fetch("http://localhost:3000/Estatisticas", {
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ dados: dados }),
+      body: JSON.stringify(dados),
     });
 
-    const dados2 = await resposta2.json();
+    const dados2 = await modeMediaMediana.json();
 
-    document.getElementById("painel4").textContent = JSON.stringify(
-      dados2,
-      null,
-      2
-    );
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados6 = await amplitude.json();
 
     getPerMonthGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    // Chame atualizarPainel1() com os resultados
+    atualizarPainel1(resultados);
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
 
   document.getElementById("parametro").value = "";
+}
+
+async function atualizarPainel1(resultados) {
+  // Agora resultados é passado como um argumento para a função
+
+  const painel = document.getElementById("painel1");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getPerMonthGrafico(dados) {
@@ -85,15 +164,113 @@ async function getByCityDados() {
 
     const pares = dadosString.split(";");
     const dados = {};
+    const numeros = [];
     for (let par of pares) {
       const [cidade, medida] = par.split(":");
       dados[cidade.trim()] = Number(medida);
+      numeros.push(Number(medida));
     }
 
+    const numerosArray = numeros.map(Number);
+
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numerosArray),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numerosArray),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numerosArray),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numerosArray),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numerosArray),
+    });
+
+    const dados6 = await amplitude.json();
+
     getByCityGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    console.log(resultados);
+
+    atualizarPainel2(resultados);
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
+}
+
+async function atualizarPainel2(resultados) {
+  const painel = document.getElementById("painel2");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getByCityGrafico(dados) {
@@ -131,15 +308,109 @@ async function getBySateDados() {
 
     const pares = dadosString.split(";");
     const dados = {};
+    const numeros = [];
     for (let par of pares) {
       const [estado, medida] = par.split(":");
       dados[estado.trim()] = Number(medida);
+      numeros.push(Number(medida));
     }
 
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados6 = await amplitude.json();
+
     getBySateGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    atualizarPainel3(resultados);
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
+}
+
+async function atualizarPainel3(resultados) {
+  const painel = document.getElementById("painel3");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getBySateGrafico(dados) {
@@ -177,10 +448,109 @@ async function getByStateAndMonthDados() {
 
     const dados = dadosString.split(";").map(Number);
 
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados6 = await amplitude.json();
+
     getByStateAndMonthGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    // Chame atualizarPainel1v2() com os resultados
+    atualizarPainel1v2(resultados);
+
+    return resultados;
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
+
+  document.getElementById("parametro").value = "";
+}
+
+async function atualizarPainel1v2(resultados) {
+  // Agora resultados é passado como um argumento para a função
+
+  const painel = document.getElementById("painel1");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getByStateAndMonthGrafico(dados) {
@@ -236,10 +606,104 @@ async function getByCityAndMonthDados() {
 
     const dados = dadosString.split(";").map(Number);
 
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados6 = await amplitude.json();
+
     getByCityAndMonthGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    atualizarPainel1(resultados);
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
+}
+
+async function atualizarPainel1(resultados) {
+  // Agora resultados é passado como um argumento para a função
+
+  const painel = document.getElementById("painel1");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getByCityAndMonthGrafico(dados) {
@@ -291,15 +755,111 @@ async function getByReasonDados() {
 
     const pares = dadosString.split(";");
     const dados = {};
+    const numeros = [];
     for (let par of pares) {
       const [rotulo, medida] = par.split(":");
       dados[rotulo.trim()] = Number(medida);
+      numeros.push(Number(medida));
     }
 
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(numeros),
+    });
+
+    const dados6 = await amplitude.json();
+
     getByReasonGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    atualizarPainel4(resultados);
   } catch (erro) {
     console.error("deu ruim man " + erro);
   }
+}
+
+async function atualizarPainel4(resultados) {
+  // Agora resultados é passado como um argumento para a função
+
+  const painel = document.getElementById("painel4");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
 }
 
 function getByReasonGrafico(dados) {

@@ -11,6 +11,14 @@
     />
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <style>
+      #menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+        top: 10px;
+        left: 10px;
+      }
       .chart-container {
         display: flex;
         justify-content: space-around;
@@ -20,9 +28,17 @@
       .chart {
         width: 40%;
       }
+      .chart2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       .painel {
         text-align: center;
         margin-bottom: 20px;
+        border: 2px solid #000;
+        padding: 10px;
+        font-size: 20px;
       }
     </style>
     <script>
@@ -45,138 +61,146 @@
     </script>
   </head>
   <body>
-    <input type="text" id="parametro" name="parametro" />
-    <button id="filtroEstado" onclick="filtrarPorEstado()">
-      Filtrar por Estado
-    </button>
-    <button id="filtroCidade" onclick="filtrarPorCidade()">
-      Filtrar por Cidade
-    </button>
-    <button id="limparFiltros" onclick="limparFiltros()">Limpar Filtros</button>
+    <div id="menu">
+      <input type="text" id="parametro" name="parametro" />
+      <button id="filtroEstado" onclick="filtrarPorEstado()">
+        Filtrar por Estado
+      </button>
+      <button id="filtroCidade" onclick="filtrarPorCidade()">
+        Filtrar por Cidade
+      </button>
+      <button id="limparFiltros" onclick="limparFiltros()">Limpar Filtros</button>
+    </div>
     <div class="chart-container">
       <div id="chart_div" class="chart"></div>
-      <div id="painel1" class="painel">Teste</div>
+      <div id="painel1" class="painel"></div>
       <div id="csharp_code1" class="chart">
         <br />
         <br />
-        <br />
-        <br />
         <pre><code class="csharp">
-#region GetPerMonths
-[HttpGet("GetPerMonth")]
-public IActionResult GetperMonths()
+[HttpPost("Estatisticas")]
+public IActionResult Estatisticas(List<double> numeros)
 {
-  var techVisits = _db.TechnicalVisits.ToList();
+  if (numeros == null || !numeros.Any())
+  {
+    return BadRequest("A lista de números está vazia ou nula.");
+  }
   
-  var jan = techVisits.Where(x => x.DataDoServico.Month == 01).Count().ToString();
-  var feb = techVisits.Where(x => x.DataDoServico.Month == 02).Count().ToString();
-  var mar = techVisits.Where(x => x.DataDoServico.Month == 03).Count().ToString();
-  var apr = techVisits.Where(x => x.DataDoServico.Month == 04).Count().ToString();
-  var may = techVisits.Where(x => x.DataDoServico.Month == 05).Count().ToString();
-  var jun = techVisits.Where(x => x.DataDoServico.Month == 06).Count().ToString();
-  var jul = techVisits.Where(x => x.DataDoServico.Month == 07).Count().ToString();
-  var aug = techVisits.Where(x => x.DataDoServico.Month == 08).Count().ToString();
-  var sep = techVisits.Where(x => x.DataDoServico.Month == 09).Count().ToString();
-  var oct = techVisits.Where(x => x.DataDoServico.Month == 10).Count().ToString();
-  var nov = techVisits.Where(x => x.DataDoServico.Month == 11).Count().ToString();
-  var dec = techVisits.Where(x => x.DataDoServico.Month == 12).Count().ToString();
+  var numerosOrdenados = numeros.OrderBy(x => x).ToList();
   
-  return Ok(jan + ";" + feb + ";" + mar + ";" + apr + ";" + may + ";" + jun + ";" + jul + ";" + aug + ";" + sep + ";" + oct + ";" + nov + ";" + dec);
+  double media = numerosOrdenados.Average();
+  
+  var grupos = numerosOrdenados.GroupBy(x => x)
+                               .OrderByDescending(g => g.Count())
+                               .ToList();
+  
+  var moda = grupos.First().Count() == 1 ? null : grupos.Where(g => g.Count() == grupos.First().Count()).Select(g => g.Key).ToList();
+  
+  double mediana;
+  
+  if (numerosOrdenados.Count % 2 == 0)
+  {
+    mediana = (numerosOrdenados[(numerosOrdenados.Count / 2) - 1] + numerosOrdenados[numerosOrdenados.Count / 2]) / 2.0;
+  }
+  else
+  {
+    mediana = numerosOrdenados[numerosOrdenados.Count / 2];
+  }
+  
+  var resultado = new
+  {
+    Media = media.ToString("F2"),
+    Moda = moda,
+    Mediana = mediana
+  };
+  
+  return Ok(resultado);
 }
-#endregion
         </code></pre>
       </div>
     </div>
     <div class="chart-container">
       <div id="chart_div2" class="chart"></div>
-      <div id="painel2" class="painel">Teste</div>
+      <div id="painel2" class="painel"></div>
       <div id="csharp_code2" class="chart">
         <br />
         <br />
         <br />
         <pre><code class="csharp">
-public IActionResult GetByCity()
+[HttpPost("CalcularVariancias")]
+public ActionResult<double> CalcularVariancias(List<double> numeros)
 {
-  var techVisits = _db.TechnicalVisits.ToList();
-          
-  var visitsByCity = techVisits
-    .GroupBy(x => x.Cidade.ToUpper())
-    .Select(g => new { City = g.Key, Count = g.Count() }).OrderByDescending(x => x.Count);
-          
-  var results = new List<string>();
-          
-  foreach (var visit in visitsByCity)
+  double varianciaP = numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / numeros.Count;
+  double varianciaA = numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / (numeros.Count-1);
+  
+  var resultado = new
   {
-    results.Add($"{visit.City}: {visit.Count}");
-    if (results.Count == 10) break;
-  }
-          
-  var resultString = string.Join(";", results);
-          
-  return Ok(resultString);
+  VarianciaA = varianciaA.ToString("F2"),
+  VarianciaP = varianciaP.ToString("F2")
+  };
+  
+  return Ok(resultado);
 }
-#endregion
         </code></pre>
       </div>
     </div>
     <div class="chart-container">
       <div id="chart_div3" class="chart"></div>
-      <div id="painel3" class="painel">Teste</div>
+      <div id="painel3" class="painel"></div>
       <div id="csharp_code3" class="chart">
         <br />
         <br />
         <pre><code class="csharp">
-#region GetByState
-[HttpGet("GetBySate")]
-public IActionResult GetByState()
+[HttpPost("CalcularDesvios")]
+public ActionResult<double> CalcularDesvios(List<double> numeros)
 {
-  var techVisits = _db.TechnicalVisits.ToList();
+  double desvioP = Math.Sqrt(numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / numeros.Count);
+  double desvioA = Math.Sqrt(numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / (numeros.Count - 1));
   
-  var vistisByState = techVisits.GroupBy(x => x.Estado).Select(g => new { State = g.Key, Count = g.Count() });
-  
-  var results = new List<string>();
-  
-  foreach (var visit in vistisByState)
+  var resultado = new
   {
-    results.Add($"{visit.State}: {visit.Count}");
-  }
+    DesvioP = desvioP.ToString("F2"),
+    DesvioA = desvioA.ToString("F2")
+  };
   
-  var resultString = string.Join(";", results);
-  
-  return Ok(resultString);
+  return Ok(resultado);
 }
-#endregion
         </code></pre>
       </div>
     </div>
     <div class="chart-container">
       <div id="chart_div4" class="chart"></div>
-      <div id="painel4" class="painel">Teste</div>
+      <div id="painel4" class="painel"></div>
       <div id="csharp_code4" class="chart">
         <pre><code class="csharp">
-#region GetByReason
-[HttpGet("GetByReason")]
-public IActionResult GetByReason()
+[HttpPost("Coeficiente")]
+public ActionResult<string> CalcularCoeficiente(List<double> numeros)
 {
-  var techVisits = _db.TechnicalVisits.ToList();
+  var populacional = ((Math.Sqrt(numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / numeros.Count)) / numeros.Average());
+  var amostral = ((Math.Sqrt(numeros.Sum(val => Math.Pow(val - numeros.Average(), 2)) / (numeros.Count - 1))) / numeros.Average());
   
-  var visitsByReason = techVisits
-    .GroupBy(x => x.Motivo.ToUpper())
-    .Select(g => new { Reason = g.Key, Count = g.Count() }).OrderByDescending(x => x.Count);
-  
-  var results = new List<string>();
-  
-  foreach (var visit in visitsByReason)
+  var resultado = new
   {
-    results.Add($"{visit.Reason}: {visit.Count}");
-    if (results.Count == 10) break;
-  }
+    Amostral = (amostral * 100).ToString("F2") + "%",
+    Populacional = (populacional * 100).ToString("F2") + "%"
+  };
   
-  var resultString = string.Join(";", results);
-  
-  return Ok(resultString);
+  return Ok(resultado);
 }
-#endregion
+
+[HttpPost("Amplitude")]
+public ActionResult<double> Amplitude(List<double> numeros)
+{
+  double maior = numeros.Max();
+  double menor = numeros.Min();
+
+  var resultado = new
+  {
+    Amplitude = (maior - menor).ToString("F2")
+  };
+
+  return Ok(resultado);
+}  
         </code></pre>
       </div>
     </div>
