@@ -12,6 +12,22 @@ async function getPerMonthDados() {
 
     const dados = dadosString.split(";").map(Number);
 
+    const resposta2 = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ dados: dados }),
+    });
+
+    const dados2 = await resposta2.json();
+
+    document.getElementById("painel4").textContent = JSON.stringify(
+      dados2,
+      null,
+      2
+    );
+
     getPerMonthGrafico(dados);
   } catch (erro) {
     console.error("deu ruim man " + erro);

@@ -6,8 +6,10 @@ const path = require("path");
 
 const app = express();
 
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
-  res.sendFile("visoes.html", { root: path.join(__dirname, "public/html") });
+  res.sendFile("capa.html", { root: path.join(__dirname, "public/html") });
 });
 
 app.get("/js/scripts.js", (req, res) => {
@@ -93,6 +95,22 @@ app.get("/GetByReason", async (req, res) => {
   } catch (erro) {
     console.error("deu ruim aqui man: " + erro);
     res.status(500).send("erro no servidor man");
+  }
+});
+
+app.post("/Estatisticas", async (req, res) => {
+  try {
+    const dados = req.body;
+
+    const resposta = await axios.post(
+      "https://glad-reliably-lion.ngrok-free.app/TechVisits/Estatisticas",
+      dados
+    );
+
+    res.send(resposta.data);
+  } catch (erro) {
+    console.error("Erro ao buscar os dados: " + erro);
+    res.status(500).json({ erro: "Erro no servidor" });
   }
 });
 

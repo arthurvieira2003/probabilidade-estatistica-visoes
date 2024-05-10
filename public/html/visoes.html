@@ -5,14 +5,24 @@
       src="https://www.gstatic.com/charts/loader.js"
     ></script>
     <script src="../js/scripts.js"></script>
+    <link
+      rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css"
+    />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     <style>
       .chart-container {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        flex-direction: row;
       }
       .chart {
-        width: 80%;
+        width: 40%;
+      }
+      .painel {
+        text-align: center;
+        margin-bottom: 20px;
       }
     </style>
     <script>
@@ -45,11 +55,133 @@
     <button id="limparFiltros" onclick="limparFiltros()">Limpar Filtros</button>
     <div class="chart-container">
       <div id="chart_div" class="chart"></div>
+      <div id="painel1" class="painel">Teste</div>
+      <div id="csharp_code1" class="chart">
+        <br />
+        <br />
+        <br />
+        <br />
+        <pre><code class="csharp">
+#region GetPerMonths
+[HttpGet("GetPerMonth")]
+public IActionResult GetperMonths()
+{
+  var techVisits = _db.TechnicalVisits.ToList();
+  
+  var jan = techVisits.Where(x => x.DataDoServico.Month == 01).Count().ToString();
+  var feb = techVisits.Where(x => x.DataDoServico.Month == 02).Count().ToString();
+  var mar = techVisits.Where(x => x.DataDoServico.Month == 03).Count().ToString();
+  var apr = techVisits.Where(x => x.DataDoServico.Month == 04).Count().ToString();
+  var may = techVisits.Where(x => x.DataDoServico.Month == 05).Count().ToString();
+  var jun = techVisits.Where(x => x.DataDoServico.Month == 06).Count().ToString();
+  var jul = techVisits.Where(x => x.DataDoServico.Month == 07).Count().ToString();
+  var aug = techVisits.Where(x => x.DataDoServico.Month == 08).Count().ToString();
+  var sep = techVisits.Where(x => x.DataDoServico.Month == 09).Count().ToString();
+  var oct = techVisits.Where(x => x.DataDoServico.Month == 10).Count().ToString();
+  var nov = techVisits.Where(x => x.DataDoServico.Month == 11).Count().ToString();
+  var dec = techVisits.Where(x => x.DataDoServico.Month == 12).Count().ToString();
+  
+  return Ok(jan + ";" + feb + ";" + mar + ";" + apr + ";" + may + ";" + jun + ";" + jul + ";" + aug + ";" + sep + ";" + oct + ";" + nov + ";" + dec);
+}
+#endregion
+        </code></pre>
+      </div>
+    </div>
+    <div class="chart-container">
       <div id="chart_div2" class="chart"></div>
+      <div id="painel2" class="painel">Teste</div>
+      <div id="csharp_code2" class="chart">
+        <br />
+        <br />
+        <br />
+        <pre><code class="csharp">
+public IActionResult GetByCity()
+{
+  var techVisits = _db.TechnicalVisits.ToList();
+          
+  var visitsByCity = techVisits
+    .GroupBy(x => x.Cidade.ToUpper())
+    .Select(g => new { City = g.Key, Count = g.Count() }).OrderByDescending(x => x.Count);
+          
+  var results = new List<string>();
+          
+  foreach (var visit in visitsByCity)
+  {
+    results.Add($"{visit.City}: {visit.Count}");
+    if (results.Count == 10) break;
+  }
+          
+  var resultString = string.Join(";", results);
+          
+  return Ok(resultString);
+}
+#endregion
+        </code></pre>
+      </div>
     </div>
     <div class="chart-container">
       <div id="chart_div3" class="chart"></div>
-      <div id="chart_div4" class="chart"></div>
+      <div id="painel3" class="painel">Teste</div>
+      <div id="csharp_code3" class="chart">
+        <br />
+        <br />
+        <pre><code class="csharp">
+#region GetByState
+[HttpGet("GetBySate")]
+public IActionResult GetByState()
+{
+  var techVisits = _db.TechnicalVisits.ToList();
+  
+  var vistisByState = techVisits.GroupBy(x => x.Estado).Select(g => new { State = g.Key, Count = g.Count() });
+  
+  var results = new List<string>();
+  
+  foreach (var visit in vistisByState)
+  {
+    results.Add($"{visit.State}: {visit.Count}");
+  }
+  
+  var resultString = string.Join(";", results);
+  
+  return Ok(resultString);
+}
+#endregion
+        </code></pre>
+      </div>
     </div>
+    <div class="chart-container">
+      <div id="chart_div4" class="chart"></div>
+      <div id="painel4" class="painel">Teste</div>
+      <div id="csharp_code4" class="chart">
+        <pre><code class="csharp">
+#region GetByReason
+[HttpGet("GetByReason")]
+public IActionResult GetByReason()
+{
+  var techVisits = _db.TechnicalVisits.ToList();
+  
+  var visitsByReason = techVisits
+    .GroupBy(x => x.Motivo.ToUpper())
+    .Select(g => new { Reason = g.Key, Count = g.Count() }).OrderByDescending(x => x.Count);
+  
+  var results = new List<string>();
+  
+  foreach (var visit in visitsByReason)
+  {
+    results.Add($"{visit.Reason}: {visit.Count}");
+    if (results.Count == 10) break;
+  }
+  
+  var resultString = string.Join(";", results);
+  
+  return Ok(resultString);
+}
+#endregion
+        </code></pre>
+      </div>
+    </div>
+    <script>
+      hljs.highlightAll();
+    </script>
   </body>
 </html>
