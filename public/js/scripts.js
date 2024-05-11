@@ -3,6 +3,7 @@ google.charts.setOnLoadCallback(getPerMonthDados);
 google.charts.setOnLoadCallback(getByCityDados);
 google.charts.setOnLoadCallback(getBySateDados);
 google.charts.setOnLoadCallback(getByReasonDados);
+google.charts.setOnLoadCallback(getPerReasonsMonthsDados);
 
 async function getPerMonthDados() {
   try {
@@ -977,6 +978,163 @@ function getByStateFiltradoGrafico(dados) {
 
   var chart = new google.visualization.ColumnChart(
     document.getElementById("chart_div3")
+  );
+  chart.draw(data, options);
+}
+
+async function getPerReasonsMonthsDados() {
+  try {
+    const valorParametro = document.getElementById("motivo").value;
+
+    const resposta = await fetch(
+      `http://localhost:3000/GetPerReasonsMonths?motivo=${valorParametro}`
+    );
+
+    const dadosString = await resposta.text();
+
+    const dados = dadosString.split(";").map(Number);
+
+    const modeMediaMediana = await fetch("http://localhost:3000/Estatisticas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados2 = await modeMediaMediana.json();
+
+    const variancias = await fetch("http://localhost:3000/CalcularVariancias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados3 = await variancias.json();
+
+    const desvios = await fetch("http://localhost:3000/CalcularDesvios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados4 = await desvios.json();
+
+    const coeficiente = await fetch("http://localhost:3000/Coeficiente", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados5 = await coeficiente.json();
+
+    const amplitude = await fetch("http://localhost:3000/Amplitude", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dados),
+    });
+
+    const dados6 = await amplitude.json();
+
+    getPerReasonsMonthsGrafico(dados);
+
+    const resultados = {
+      modeMediaMediana: dados2,
+      variancias: dados3,
+      desvios: dados4,
+      coeficiente: dados5,
+      amplitude: dados6,
+    };
+
+    // Chame atualizarPainel1v2() com os resultados
+    atualizarPainel5(resultados);
+
+    return resultados;
+  } catch (erro) {
+    console.error("deu ruim man " + erro);
+  }
+}
+
+async function atualizarPainel5(resultados) {
+  // Agora resultados é passado como um argumento para a função
+
+  const painel = document.getElementById("painel5");
+  painel.innerHTML = `
+    <strong>Media:</strong> ${resultados.modeMediaMediana.media} <br>
+    <strong>Moda:</strong> ${
+      resultados.modeMediaMediana.moda !== null
+        ? resultados.modeMediaMediana.moda
+        : "Não possui"
+    } <br> 
+    <strong>Mediana:</strong> ${resultados.modeMediaMediana.mediana} <br> <br>
+    <strong>Variância Amostral:</strong> ${
+      resultados.variancias.varianciaA
+    } <br>
+    <strong>Variância Populacional:</strong> ${
+      resultados.variancias.varianciaP
+    } <br> <br>
+    <strong>Desvio Padrão Populacional:</strong> ${
+      resultados.desvios.desvioP
+    } <br>
+    <strong>Desvio Padrão Amostral:</strong> ${
+      resultados.desvios.desvioA
+    } <br> <br>
+    <strong>Coeficiente Amostral:</strong> ${
+      resultados.coeficiente.amostral
+    } <br>
+    <strong>Coeficiente Populacional:</strong> ${
+      resultados.coeficiente.populacional
+    } <br> <br>
+    <strong>Amplitude:</strong> ${resultados.amplitude.amplitude}
+  `;
+}
+
+function getPerReasonsMonthsGrafico(dados) {
+  var data = new google.visualization.DataTable();
+  data.addColumn("string", "Mês");
+  data.addColumn("number", "Quantidade");
+
+  const meses = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+
+  for (let i = 0; i < dados.length; i++) {
+    data.addRow([meses[i], dados[i]]);
+  }
+
+  var options = {
+    title: "Quantidade por Motivo/Mês",
+    height: 600,
+    hAxis: {
+      title: "Mês",
+      slantedText: true,
+      slantedTextAngle: 45,
+    },
+    vAxis: { title: "Quantidade" },
+    colors: ["#d1ac36"],
+  };
+
+  var chart = new google.visualization.ColumnChart(
+    document.getElementById("chart_div5")
   );
   chart.draw(data, options);
 }

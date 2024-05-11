@@ -181,6 +181,21 @@ app.post("/Amplitude", async (req, res) => {
   }
 });
 
+app.get("/GetPerReasonsMonths", async (req, res) => {
+  try {
+    const valorParametro = req.query.motivo;
+
+    const resposta = await axios.get(
+      `https://glad-reliably-lion.ngrok-free.app/TechVisits/GetPerReasonsMonths?motivo=${valorParametro}`
+    );
+
+    res.send(resposta.data);
+  } catch (erro) {
+    console.error("deu ruim aqui man: " + erro);
+    res.status(500).send("erro no servidor man");
+  }
+});
+
 app.listen(3000, () => {
   console.log("on na 3000");
 });

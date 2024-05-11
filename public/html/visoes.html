@@ -63,6 +63,15 @@
   <body>
     <div id="menu">
       <input type="text" id="parametro" name="parametro" />
+      <select id="motivo" onchange="getPerReasonsMonthsDados()">
+        <option value="Manutenção corretiva">Manutenção corretiva</option>
+        <option value="Manutenção preventiva">Manutenção preventiva</option>
+        <option value="Retirada total">Retirada total</option>
+        <option value="Instalação de itens comprados">Instalação de itens comprados</option>
+        <option value="Retirada parcial">Retirada parcial</option>
+        <option value="Lavanderia">Lavanderia</option>
+        <option value="Instalação de demonstração">Instalação de demonstração</option>
+      </select>
       <button id="filtroEstado" onclick="filtrarPorEstado()">
         Filtrar por Estado
       </button>
@@ -78,6 +87,7 @@
         <br />
         <br />
         <pre><code class="csharp">
+// Média, Moda e Mediana
 [HttpPost("Estatisticas")]
 public IActionResult Estatisticas(List<double> numeros)
 {
@@ -120,13 +130,13 @@ public IActionResult Estatisticas(List<double> numeros)
       </div>
     </div>
     <div class="chart-container">
-      <div id="chart_div2" class="chart"></div>
-      <div id="painel2" class="painel"></div>
-      <div id="csharp_code2" class="chart">
-        <br />
+      <div id="chart_div5" class="chart"></div>
+      <div id="painel5" class="painel"></div>
+      <div id="csharp_code5" class="chart">
         <br />
         <br />
         <pre><code class="csharp">
+// Variâncias Populacional e Amostral
 [HttpPost("CalcularVariancias")]
 public ActionResult<double> CalcularVariancias(List<double> numeros)
 {
@@ -145,12 +155,14 @@ public ActionResult<double> CalcularVariancias(List<double> numeros)
       </div>
     </div>
     <div class="chart-container">
-      <div id="chart_div3" class="chart"></div>
-      <div id="painel3" class="painel"></div>
-      <div id="csharp_code3" class="chart">
+      <div id="chart_div2" class="chart"></div>
+      <div id="painel2" class="painel"></div>
+      <div id="csharp_code2" class="chart">
+        <br />
         <br />
         <br />
         <pre><code class="csharp">
+// Desvios Populacional e Amostral
 [HttpPost("CalcularDesvios")]
 public ActionResult<double> CalcularDesvios(List<double> numeros)
 {
@@ -169,10 +181,13 @@ public ActionResult<double> CalcularDesvios(List<double> numeros)
       </div>
     </div>
     <div class="chart-container">
-      <div id="chart_div4" class="chart"></div>
-      <div id="painel4" class="painel"></div>
-      <div id="csharp_code4" class="chart">
+      <div id="chart_div3" class="chart"></div>
+      <div id="painel3" class="painel"></div>
+      <div id="csharp_code3" class="chart">
+        <br />
+        <br />
         <pre><code class="csharp">
+// Coeficiente Amostral e Populacional
 [HttpPost("Coeficiente")]
 public ActionResult<string> CalcularCoeficiente(List<double> numeros)
 {
@@ -187,7 +202,15 @@ public ActionResult<string> CalcularCoeficiente(List<double> numeros)
   
   return Ok(resultado);
 }
-
+        </code></pre>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div id="chart_div4" class="chart"></div>
+      <div id="painel4" class="painel"></div>
+      <div id="csharp_code4" class="chart">
+        <pre><code class="csharp">
+// Amplitude
 [HttpPost("Amplitude")]
 public ActionResult<double> Amplitude(List<double> numeros)
 {
