@@ -22,7 +22,7 @@ app.get("/js/scripts.js", (req, res) => {
 app.get("/GetPerMonth", async (req, res) => {
   try {
     const resposta = await axios.get(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/GetPerMonth"
+      "http://localhost:5000/TechVisits/GetPerMonth"
     );
 
     res.send(resposta.data);
@@ -35,7 +35,7 @@ app.get("/GetPerMonth", async (req, res) => {
 app.get("/GetByCity", async (req, res) => {
   try {
     const resposta = await axios.get(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/GetByCity"
+      "http://localhost:5000/TechVisits/GetByCity"
     );
 
     res.send(resposta.data);
@@ -48,7 +48,7 @@ app.get("/GetByCity", async (req, res) => {
 app.get("/GetBySate", async (req, res) => {
   try {
     const resposta = await axios.get(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/GetBySate"
+      "http://localhost:5000/TechVisits/GetBySate"
     );
 
     res.send(resposta.data);
@@ -63,7 +63,7 @@ app.get("/GetByStateAndMonth", async (req, res) => {
     const valorParametro = req.query.parametro;
 
     const resposta = await axios.get(
-      `https://glad-reliably-lion.ngrok-free.app/TechVisits/GetByStateAndMonth?state=${valorParametro}`
+      `http://localhost:5000/TechVisits/GetByStateAndMonth?state=${valorParametro}`
     );
 
     res.send(resposta.data);
@@ -78,7 +78,7 @@ app.get("/GetByCityAndMonth", async (req, res) => {
     const valorParametro = req.query.parametro;
 
     const resposta = await axios.get(
-      `https://glad-reliably-lion.ngrok-free.app/TechVisits/GetByCityAndMonth?city=${valorParametro}`
+      `http://localhost:5000/TechVisits/GetByCityAndMonth?city=${valorParametro}`
     );
 
     res.send(resposta.data);
@@ -91,7 +91,7 @@ app.get("/GetByCityAndMonth", async (req, res) => {
 app.get("/GetByReason", async (req, res) => {
   try {
     const resposta = await axios.get(
-      `https://glad-reliably-lion.ngrok-free.app/TechVisits/GetByReason`
+      `http://localhost:5000/TechVisits/GetByReason`
     );
 
     res.send(resposta.data);
@@ -106,7 +106,7 @@ app.post("/Estatisticas", async (req, res) => {
     const dados = req.body;
 
     const resposta = await axios.post(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/Estatisticas",
+      "http://localhost:5000/TechVisits/Estatisticas",
       dados
     );
 
@@ -122,7 +122,7 @@ app.post("/CalcularVariancias", async (req, res) => {
     const dados = req.body;
 
     const resposta = await axios.post(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/CalcularVariancias",
+      "http://localhost:5000/TechVisits/CalcularVariancias",
       dados
     );
 
@@ -138,7 +138,7 @@ app.post("/CalcularDesvios", async (req, res) => {
     const dados = req.body;
 
     const resposta = await axios.post(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/CalcularDesvios",
+      "http://localhost:5000/TechVisits/CalcularDesvios",
       dados
     );
 
@@ -154,7 +154,7 @@ app.post("/Coeficiente", async (req, res) => {
     const dados = req.body;
 
     const resposta = await axios.post(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/Coeficiente",
+      "http://localhost:5000/TechVisits/Coeficiente",
       dados
     );
 
@@ -170,7 +170,7 @@ app.post("/Amplitude", async (req, res) => {
     const dados = req.body;
 
     const resposta = await axios.post(
-      "https://glad-reliably-lion.ngrok-free.app/TechVisits/Amplitude",
+      "http://localhost:5000/TechVisits/Amplitude",
       dados
     );
 
@@ -186,7 +186,7 @@ app.get("/GetPerReasonsMonths", async (req, res) => {
     const valorParametro = req.query.motivo;
 
     const resposta = await axios.get(
-      `https://glad-reliably-lion.ngrok-free.app/TechVisits/GetPerReasonsMonths?motivo=${valorParametro}`
+      `http://localhost:5000/TechVisits/GetPerReasonsMonths?motivo=${valorParametro}`
     );
 
     res.send(resposta.data);
